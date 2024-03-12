@@ -14,11 +14,12 @@ extern void mtll_free(struct mtll *);
 
 extern void mtll_view(struct mtll *);
 
-extern void mtll_view_all(struct mtll **);
+extern void mtll_view_all(struct mtll **, size_t);
 
-extern void mtll_remove(struct mtll **, struct mtll *);
+extern void mtll_remove(struct mtll **, , size_t, struct mtll *);
 
 // You will likely need other functions for Parts 2 and 3,
 // And for general input / output management
+
 
 #endif
