@@ -1,11 +1,12 @@
 #include "mtll.h"
 
 #include <stdlib.h>
-
 #include <stdio.h>
+#include <string.h>
 
 #define MAX_INPUT_SIZE (128)
 
+<<<<<<< HEAD
 invalid_command(char* command)
 {
     printf("INVALID COMMAND: %s", command);
@@ -14,11 +15,193 @@ invalid_command(char* command)
 void print_node(node* node){
     if (node == NULL){
         prtinf('ERROR: NODE NOT FOUND');
+=======
+int get_list_id(node* sublist) {
+    if (sublist != NULL) {
+        return *((int*)(sublist->data));
+    }else {
+        // Handle error: sublist or sublist->data is NULL
+        return -1; // Return a default value to indicate failure
+    }
+}
+
+
+int valid_id(node* mega_list, int list_id){
+    
+
+    if(list_id < 1){
+        return 0;
+    }
+    
+    node *current = mega_list;
+    while(current != NULL){
+        if (get_list_id(current->data) == list_id){
+            return 1;
+        }
+        current = current->next;
+    }
+    return 0;
+}
+
+
+
+void invalid_command(char* command)
+{
+    printf("INVALID COMMAND: %s\n", command);
+    return;
+}
+
+
+
+node* element_from_index(node *head, int index, char* command){
+    node *current = head;
+
+    while (current != NULL){
+        if ((*(int*)current->data == index)){
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
+void store_data(node* storage, char *data) {
+    char *end;
+
+    // Remove newline character from input
+    data[strcspn(data, "\n")] = '\0';
+
+    int int_data = strtol(data, &end, 10);
+    if (*end == '\0') {
+        // Integer
+        int *int_ptr = malloc(sizeof(int));
+        if (int_ptr != NULL) {
+            *int_ptr = int_data;
+            storage->data = (void*)int_ptr;
+            storage->type = INTEGER;
+            return; // Return after storing integer
+        }
+    } 
+    
+    // Try parsing input as a float
+    float float_data = strtof(data, &end);
+    if (*end == '\0') {
+        float *float_ptr = malloc(sizeof(float));
+        if (float_ptr != NULL) {
+            *float_ptr = float_data;
+            storage->data = (void*)float_ptr;
+            storage->type = FLOAT;
+            return; // Return after storing float
+        }
+    }
+    
+    // Check if input is a single character
+    if (strlen(data) == 1) {
+        // Character
+        char *char_ptr = malloc(sizeof(char));
+        if (char_ptr != NULL) {
+            *char_ptr = *data;
+            storage->data = (void*)char_ptr;
+            storage->type = CHAR;
+            return; // Return after storing character
+        }
+    } 
+    
+    // String
+    char *str_ptr = malloc(strlen(data) + 1);
+    if (str_ptr != NULL) {
+        strcpy(str_ptr, data);
+        storage->data = (void*)str_ptr;
+        storage->type = STRING;
+    }
+}
+
+void mtll_create(node **mega_list, int size, int new_list_id){
+
+    // Create the head of the new list
+    node *head = (node*)malloc(sizeof(node));
+    if (head == NULL) {
+        printf("Memory allocation failed for the head of the new list.\n");
+        return;
+>>>>>>> f304311 (Part 1 Completed: NEW, VIEW, TYPE)
     }
 
-    switch (node->type){
+    // Initialize the head of the new list
+    char id[3];
+    sprintf(id, "%d", new_list_id);
+    store_data(head, id);
+    head->next = NULL;
+    head->type = INTEGER;
+
+    // Populate the new list
+    node *current = head;
+    char input[MAX_INPUT_SIZE];
+
+    for (int i = 0; i < size; i++) {
+        fgets(input, sizeof(input), stdin);
+
+        node* new_list_node = (node*)malloc(sizeof(node));
+        if (new_list_node == NULL) {
+            printf("Memory allocation failed for a new node in the list.\n");
+            // Free allocated memory before returning
+            while (head != NULL) {
+                node *temp = head;
+                head = head->next;
+                free(temp);
+            }
+            return;
+        }
+
+        store_data(new_list_node, input);
+        new_list_node->next = NULL;
+
+        current->next = new_list_node;
+        current = new_list_node;
+    }
+
+    // Create a new node to hold the new list
+    node *new_node = (node*)malloc(sizeof(node));
+    if (new_node == NULL) {
+        printf("Memory allocation failed for a new node.\n");
+        // Free allocated memory before returning
+        while (head != NULL) {
+            node *temp = head;
+            head = head->next;
+            free(temp);
+        }
+        return;
+    }
+
+    // Initialize the new node
+    new_node->data = head; // Set the data to point to the head of the new list
+    new_node->type = LIST;
+    new_node->next = NULL;
+
+    // Link the new list node to the mega_list
+    if (*mega_list == NULL) {
+        *mega_list = new_node;
+    } else {
+        node *last = *mega_list;
+        while (last->next != NULL) {
+            last = last->next;
+        }
+        last->next = new_node;
+    }
+}
+
+void mtll_free(node *head){
+
+    // TODO
+}
+
+void print_node(node* element){
+    if (element == NULL){
+        printf("ERROR: NODE NOT FOUND");
+    }
+    switch (element->type){
 
         case LIST:
+<<<<<<< HEAD
             printf("{List %d}", node->data);
             break;
 
@@ -40,13 +223,43 @@ void print_node(node* node){
 
         default:
             printf('ERROR: TYPE UNKOWN');
+=======
+            node *sublist = element->data;
+            printf("{List %d}", *(int*)sublist->data);
+            break;
+
+        case INTEGER:
+            printf("%d", *(int*)element->data);
+            break;
+
+        case FLOAT:
+            printf("%.2f", *(float*)element->data);
+            break;
+
+        case CHAR:
+            printf("%c", *(char*)element->data);
+            break;
+
+        case STRING:
+            printf("%s", (char*)element->data);
+            break;
+
+        default:
+            printf("ERROR: TYPE UNKOWN");
+            break;
+>>>>>>> f304311 (Part 1 Completed: NEW, VIEW, TYPE)
 
     }
 }
 
-void print_node_type(node* node){
+void print_node_type(node* node)
+{
     if (node == NULL){
+<<<<<<< HEAD
         prtinf('ERROR: NODE NOT FOUND');
+=======
+        printf("ERROR: NODE NOT FOUND");
+>>>>>>> f304311 (Part 1 Completed: NEW, VIEW, TYPE)
     }
 
     switch (node->type){
@@ -72,36 +285,49 @@ void print_node_type(node* node){
             break;
 
         default:
+<<<<<<< HEAD
             printf('ERROR: TYPE UNKOWN');
+=======
+            printf("ERROR: TYPE UNKOWN");
+            break;
+>>>>>>> f304311 (Part 1 Completed: NEW, VIEW, TYPE)
 
-    }
-}
-
-void mtll_print_list(node* head){
-    print_node(head);
-    node* current = head->next;
-
-    while (current!=NULL){
-        if(current->type == LIST)
-        print_node(current);
-        current = current->next;
     }
     return;
 }
 
-void mtll_view(node **mega_list, int index){
-    int count = 0;
-    node *current = *mega_list;
-    
+
+void mtll_print_list(node* head, printMode mode){
+    node* current = head;
+
+    // Print the data of the current node and move to the next node
+    while (current != NULL){
+        if(mode == DATA){print_node(current);}
+        else if (mode == TYPE) {print_node_type(current);}
+        if (current->next != NULL) {
+            printf(" -> ");
+        }
+        current = current->next;
+    }
+    printf("\n"); // Print a newline character at the end
+}
+
+
+
+void mtll_view(node *mega_list, int index, printMode mode) {
+    // Check if mega_list is empty
+
+    node *current = mega_list;
+
     // Traverse linked list searching for node with ID==index.
     while (current != NULL) {
-        if (current->data == index){
+        if (get_list_id(current->data) == index) {
             break;
         }
         current = current->next;
-        count++;
     }
 
+<<<<<<< HEAD
     // If index is out of bounds, or current is NULL
     if (current != NULL) {
         mtll_print_list(current);
@@ -125,127 +351,38 @@ element_from_index(node *head, int index, char* command){
             printf("INVALID COMMAND: %s", command);
 
         }
+=======
+    // If the list with the given index is found
+    if (current != NULL && current->data != NULL) {
+        node* sublist = current->data;
+        mtll_print_list(sublist->next, mode); // Access the sublist to print its contents
+>>>>>>> f304311 (Part 1 Completed: NEW, VIEW, TYPE)
     }
 }
 
-void* store_data(char *data) {
-    char *end;
-    void *new_data = NULL;
-
-    int int_data = strtol(data, &end, 10);
-    if (*end == '\0') {
-        // Integer
-        int *int_ptr = malloc(sizeof(int));
-        if (int_ptr != NULL) {
-            *int_ptr = int_data;
-            new_data = int_ptr;
-        }
-    } else {
-        // Float
-        float float_data = strtof(data, &end);
-        if (*end == '\0') {
-            float *float_ptr = malloc(sizeof(float));
-            if (float_ptr != NULL) {
-                *float_ptr = float_data;
-                new_data = float_ptr;
-            }
-        } else{
-            // Character or string
-            if (strlen(data) == 1) {
-                // Character
-                char *char_ptr = malloc(sizeof(char));
-                if (char_ptr != NULL) {
-                    *char_ptr = *data;
-                    new_data = char_ptr;
-                }
-            } else {
-                // String
-                char *str_ptr = malloc(strlen(data) + 1);
-                if (str_ptr != NULL) {
-                    strcpy(str_ptr, data);
-                    new_data = str_ptr;
-                }
-            }
-        }
-    }
-    return new_data;
-}
 
 
-void mtll_create(node** mega_list, int size, int new_list_id){
-
-    node *head = (node*)malloc(sizeof(node));
-    node *current = head;
-
-    char id[3];
-    sprintf(id, "%d", new_list_id);
-    head->data = store_data(id);
-    head->next = NULL;
-
-    char input[MAX_INPUT_SIZE];
-
-    for (int i = 0; i < size; i++) {
-        //Prompt user to enter element i of list.
-        fgets(input, sizeof(input), stdin);
-
-        //Allocate memory for the new node.
-        node* new_node = (node*)malloc(sizeof(node));
-
-        //Check if new node successfully allocated.
-        if (new_node == NULL) {
-            printf("Memory allocation failed for a new node.\n");
-            // Cleanup already allocated nodes before returning
-            return;
-        }aa
-
-        //Store new node data.
-        new_node->data = store_data(input);
-        new_node->next = NULL;
-
-        //Link previous node to new node and move to next.
-        current->next = new_node;
-        current = current->next;
-    }
-
-    if(*mega_list == NULL){
-        //If the mega list is currently empty, store this in the first index.
-        *mega_list = head;
-        (*mega_list)->data = new_list_id;
-        (*mega_list)->next = NULL;
-    }else{
-        current = *mega_list;
-        while (current->next != NULL){
-            current = current->next;
-        }
-        current->next = head;
-        //Add new list to mega_list and record id.
-    }
-}
-
-void mtll_free(node *head){
-
-    // TODO
-}
-
-
-void mtll_view_all(node **all_lists, int mega_size){
+void mtll_view_all(node **mega_list, int mega_size){
     
     printf("Number of lists: %d\n", mega_size);
 
-    node *current = *all_lists;
-    while (current != NULL){
+    if (*mega_list == NULL) {
+        invalid_command("VIEW ALL");
+        return;
+    }
 
-        printf("List %d\n", current->data);
+    node *current = *mega_list;
+    while (current != NULL){
+        printf("List %d\n", get_list_id(current));
         current = current->next;
     }
 }
 
-void mtll_remove(node **mega_list, int list_id){
-    node* head = *mega_list;
-    struct node* current = head;
+void mtll_remove(node *mega_list, int list_id){
+    node* current = mega_list;
 
     while (current != NULL) {
-        if (current->data == list_id){
+        if (*(int*)current->data == list_id){
             free(current);
             break;
         }
@@ -257,8 +394,8 @@ void mtll_remove(node **mega_list, int list_id){
     }
 }
 
-void mtll_delete_element(node **head, int index){
-
+void mtll_delete_element(node *mega_list, int list_id, int index){
+    return;
 }
 
 void mtll_print_types(node* head){
@@ -273,13 +410,13 @@ void mtll_print_types(node* head){
     return;
 }
 
-void mtll_view_types(node **mega_list, int index){
+void mtll_view_types(node *mega_list, int list_id){
     int count = 0;
-    node *current = *mega_list;
+    node *current = mega_list;
     
     // Traverse linked list searching for node with ID==index.
     while (current != NULL) {
-        if (current->data == index){
+        if (*(int*)current->data == list_id){
             break;
         }
         current = current->next;

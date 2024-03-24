@@ -27,28 +27,55 @@ typedef enum
 
 } dataType;
 
+<<<<<<< HEAD
+=======
+typedef enum{
+
+    DATA,
+
+    TYPE
+
+} printMode;
+
+typedef struct node
+{
+    void *data;
+    dataType type;
+    struct node *next;
+
+} node;
+
+
+
+>>>>>>> f304311 (Part 1 Completed: NEW, VIEW, TYPE)
 // A few suggested function prototypes:
 
 // Feel free to change or improve these as you need.
 extern void invalid_command(char* command);
 
+extern int valid_id(node* mega_list, int list_id);
+
+extern void print_node(node* node);
+
 extern void mtll_create(node** mega_list, int size, int new_list_id);
 
 extern void mtll_free(node *head);
 
+<<<<<<< HEAD
 extern void mtll_view(node* head, int index);
+=======
+extern void mtll_view(node* mega_list, int index, printMode mode);
+>>>>>>> f304311 (Part 1 Completed: NEW, VIEW, TYPE)
 
 extern void mtll_view_all(node **mega_list, int mega_size);
 
-extern void mtll_view_types(node *head); //Complete testing
+extern void mtll_remove(node *mega_list, int list_id); //Finish this
 
-extern void mtll_remove(node **head, node *node); //Finish this
+extern void mtll_insert_element(node *mega_list, int list_id, int index); //TODO
 
-extern void mtll_insert_element(node **mega_list, int list_id, int index); //TODO
+extern void mtll_delete_element(node *mega_list, int list_id, int index); //TODO
 
-extern void mtll_delete_element(node **mega_list, int list_id, int index); //TODO
-
-extern node* mtll_list_reference(node ** mega_list, int list_id); //TODO
+extern node* mtll_list_reference(node * mega_list, int list_id); //TODO
 
 
 <<<<<<< HEAD
