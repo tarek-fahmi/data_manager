@@ -7,6 +7,7 @@
 #define MAX_INPUT_SIZE (128)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 invalid_command(char* command)
 {
     printf("INVALID COMMAND: %s", command);
@@ -17,6 +18,10 @@ void print_node(node* node){
         prtinf('ERROR: NODE NOT FOUND');
 =======
 int get_list_id(node* sublist) {
+=======
+int get_list_id(node* mega_node) {
+    node* sublist = mega_node->data;
+>>>>>>> 1505f78 (Added: mtll_insert Fixed: mtll_view, delete)
     if (sublist != NULL) {
         return *((int*)(sublist->data));
     }else {
@@ -25,17 +30,24 @@ int get_list_id(node* sublist) {
     }
 }
 
+int get_list_size(node* head){
+    node* current = head;
+    int size = 0;
+    while (current != NULL){
+        size++;
+        current = current->next;
+    }
+    return size;
+}
 
 int valid_id(node* mega_list, int list_id){
-    
-
     if(list_id < 1){
         return 0;
     }
     
     node *current = mega_list;
     while(current != NULL){
-        if (get_list_id(current->data) == list_id){
+        if (get_list_id(current) == list_id){
             return 1;
         }
         current = current->next;
@@ -43,27 +55,38 @@ int valid_id(node* mega_list, int list_id){
     return 0;
 }
 
-
-
-void invalid_command(char* command)
-{
+void invalid_command(char* command){
     printf("INVALID COMMAND: %s\n", command);
     return;
 }
 
-
-
-node* element_from_index(node *head, int index, char* command){
-    node *current = head;
-
-    while (current != NULL){
-        if ((*(int*)current->data == index)){
-            return current;
-        }
-        current = current->next;
+node* element_from_index(node *list, int index, int list_size) {
+    if (list == NULL) {
+        return NULL; // Return NULL if the list is empty
     }
-    return NULL;
+    
+    if (list->type == LIST) { // If input is a mega_list node
+        int i = 0;
+        node *current = list;
+        while (current != NULL) {
+            if (get_list_id(current) == index) {
+                return current->data; // Return the sublist stored in the mega_list node
+            }
+            current = current->next;
+        }
+    } else if (index >= 0 && index < list_size) { // If input is a regular list node and index is valid
+        int i = 0;
+        node *current = list;
+        while (i < index && current != NULL) {
+            current = current->next;
+            i++;
+        }
+        return current;
+    }
+    return NULL; // Return NULL if the index is out of bounds or the list type is unknown
 }
+
+
 
 void store_data(node* storage, char *data) {
     char *end;
@@ -296,7 +319,6 @@ void print_node_type(node* node)
     return;
 }
 
-
 void mtll_print_list(node* head, printMode mode){
     node* current = head;
 
@@ -312,20 +334,8 @@ void mtll_print_list(node* head, printMode mode){
     printf("\n"); // Print a newline character at the end
 }
 
-
-
-void mtll_view(node *mega_list, int index, printMode mode) {
-    // Check if mega_list is empty
-
-    node *current = mega_list;
-
-    // Traverse linked list searching for node with ID==index.
-    while (current != NULL) {
-        if (get_list_id(current->data) == index) {
-            break;
-        }
-        current = current->next;
-    }
+void mtll_view(node *mega_list, int list_id, printMode mode, int mega_size) {
+    node* sublist_head = element_from_index(mega_list, list_id, mega_size)->next;
 
 <<<<<<< HEAD
     // If index is out of bounds, or current is NULL
@@ -353,14 +363,17 @@ element_from_index(node *head, int index, char* command){
         }
 =======
     // If the list with the given index is found
+<<<<<<< HEAD
     if (current != NULL && current->data != NULL) {
         node* sublist = current->data;
         mtll_print_list(sublist->next, mode); // Access the sublist to print its contents
 >>>>>>> f304311 (Part 1 Completed: NEW, VIEW, TYPE)
+=======
+    if (sublist_head != NULL) {
+        mtll_print_list(sublist_head, mode); // Access the sublist to print its contents
+>>>>>>> 1505f78 (Added: mtll_insert Fixed: mtll_view, delete)
     }
 }
-
-
 
 void mtll_view_all(node **mega_list, int mega_size){
     
@@ -378,57 +391,85 @@ void mtll_view_all(node **mega_list, int mega_size){
     }
 }
 
-void mtll_remove(node *mega_list, int list_id){
-    node* current = mega_list;
+void mtll_remove(node **mega_list, int list_id, int mega_size){
+    node* current = *mega_list;
+    node* target;
 
+    // Check if the first node matches the target ID
+    if(get_list_id(current) == list_id){
+        *mega_list = (*mega_list)->next; // Update mega_list to skip the first node
+        free(current); // Free the memory of the removed node
+        return;
+    }
+
+    // Traverse the list to find the node with the target ID
     while (current != NULL) {
-        if (*(int*)current->data == list_id){
-            free(current);
+        if (get_list_id(current->next) == list_id){
+            target = current->next; // Found the target node
             break;
         }
-        current = current->next;
+        current = current->next; // Move to the next node
     }
-
-    if (current == NULL) {
-        invalid_command("REMOVE");
+    
+    if(target != NULL){ //Free memory
+        current->next = target->next; //Remove linkage
+        free(target); //Free memory
     }
-}
-
-void mtll_delete_element(node *mega_list, int list_id, int index){
+    mtll_view_all(mega_list, mega_size);
     return;
 }
 
-void mtll_print_types(node* head){
-    print_node_type(head);
-    node* current = head->next;
-
-    while (current!=NULL){
-        if(current->type == LIST)
-        print_node(current);
-        current = current->next;
-    }
-    return;
-}
-
-void mtll_view_types(node *mega_list, int list_id){
-    int count = 0;
+void mtll_delete(node *mega_list, int list_id, int index, int mega_size) {
+    // Find the sublist corresponding to the given list_id
+    node *sublist_head = NULL;
     node *current = mega_list;
-    
-    // Traverse linked list searching for node with ID==index.
     while (current != NULL) {
-        if (*(int*)current->data == list_id){
+        if (get_list_id(current) == list_id) {
+            sublist_head = current->data;
             break;
         }
         current = current->next;
-        count++;
     }
 
-    // If index is out of bounds, or current is NULL
-    if (current != NULL) {
-        mtll_print_types(current);
-    }else{
-        invalid_command("TYPE");
+    int size;
+    if(index < 0 || index > size){
+        if (index > size){
+            invalid_command("DELETE(out of bounds)");
+            return;
+        }
+        index = size + index;
+        if(index < 0){
+            invalid_command("DELETE(out of bounds)");
+            return;
+        }
     }
+
+    // Traverse the list to find the node to delete
+    node *prev = NULL;
+    current = sublist_head;
+    int i = 0;
+    while (current != NULL && i < index) {
+        prev = current;
+        current = current->next;
+        i++;
+    }
+
+    // If node to delete is found
+    if (current != NULL) {
+        // Update pointers to skip the node to be deleted
+        if (prev != NULL) {
+            prev->next = current->next;
+        } else {
+            // If deleting the head node
+            sublist_head = current->next;
+        }
+        // Free memory for the node
+        free(current);
+    } else {
+        invalid_command("DELETE(missing index)");
+    }
+}
+
+void mtll_insert(node *mega_list, int list_id, int index, int mega_size){
     
-    return;
 }
