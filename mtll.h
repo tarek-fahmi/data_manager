@@ -42,6 +42,7 @@ typedef struct node
     void *data;
     dataType type;
     struct node *next;
+    int protected;
 
 } node;
 
@@ -57,7 +58,7 @@ extern int valid_id(node* mega_list, int list_id);
 
 extern void print_node(node* node);
 
-extern void mtll_create(node** mega_list, int size, int new_list_id);
+extern int mtll_create(node** mega_list, int size, int new_list_id);
 
 extern void mtll_free(node *head); //TODO
 
@@ -73,7 +74,7 @@ extern void mtll_view(node* mega_list, int index, printMode mode, int mega_size)
 
 extern void mtll_view_all(node **mega_list, int mega_size);
 
-extern void mtll_remove(node **mega_list, int list_id, int mega_size); //MAKE THIS FREE THE LIST RATHER THAN ONLY THE REFERENCE
+extern int mtll_remove(node **mega_list, int list_id, int mega_size); //MAKE THIS FREE THE LIST RATHER THAN ONLY THE REFERENCE
 
 extern void mtll_insert(node *mega_list, int list_id, int index, int mega_size); //TODO
 

@@ -21,19 +21,38 @@ void execute_command(char *command, node **mega_list, int *new_list_id, int *ava
             }
         }
     } else if (strncmp(command, "REMOVE", 6) == 0) {
+<<<<<<< HEAD
         if (sscanf(command, "REMOVE %d", &list_id) == 1 ) {
             mtll_remove(mega_list, list_id, *available_lists);
+<<<<<<< HEAD
             (*available_lists)--;
+=======
+=======
+        if (sscanf(command, "REMOVE %d", &list_id) == 1 && valid_id(*mega_list, list_id)) {
+            (*available_lists) -= mtll_remove(mega_list, list_id, *available_lists);
+>>>>>>> 0326015 (Testcases and error handling)
+>>>>>>> 7560cf6 (Refined Input Handling, Bug Fixes, and Enhanced Error Handling)
         } else {
             invalid_command("REMOVE");
         }
 
     } else if (strncmp(command, "NEW", 3) == 0) {
         if (sscanf(command, "NEW %d", &index) == 1 && index >= 0) {
+<<<<<<< HEAD
             mtll_create(mega_list, index, *new_list_id);
             (*new_list_id)++;
             (*available_lists)++;
+<<<<<<< HEAD
             printf("NEXT ID:%d, EXISTING LISTS:%d\n", *new_list_id, *available_lists);
+=======
+=======
+            if (mtll_create(mega_list, index, *new_list_id)){
+                (*new_list_id)++;
+                (*available_lists)++;
+                return;
+            }   
+>>>>>>> 0326015 (Testcases and error handling)
+>>>>>>> 7560cf6 (Refined Input Handling, Bug Fixes, and Enhanced Error Handling)
         }else{
             invalid_command("NEW");
         }

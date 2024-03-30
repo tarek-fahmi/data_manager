@@ -31,6 +31,27 @@ int get_list_id(node* mega_node) {
     }
 }
 
+int has_reference(node* mega_list, int list_id){
+    node* i = mega_list;
+    node* reference_head;
+
+    while (i != NULL){
+        node* j = (node*)((node*)i->data)->next;
+        while(j != NULL){
+            if (j->type == LIST || j->type == NEST){
+                reference_head = j->data;
+                if (*((int*)(reference_head->data)) == list_id){
+                    return 1;
+                }
+            }
+            j = j->next;
+        }
+        i = i->next;
+    }
+    return 0;  // No reference found
+}
+
+
 int get_list_size(node* head){
     node* current = head;
     int size = 0;
@@ -87,15 +108,36 @@ node* element_from_index(node *list, int index, int list_size) {
     return NULL; // Return NULL if the index is out of bounds or the list type is unknown
 }
 
+<<<<<<< HEAD
 
 
 void store_data(node* storage, char *data) {
+=======
+<<<<<<< HEAD
+dataType store_data(node* mega_list, node* storage, char *data) {
+>>>>>>> 7560cf6 (Refined Input Handling, Bug Fixes, and Enhanced Error Handling)
     char *end;
 <<<<<<< HEAD
 =======
     long int int_data;
     float float_data;
 >>>>>>> e7594d1 (Error handling and memory leaks)
+=======
+void update_nestness(node* sublist_branch){
+    node* current = sublist_branch->next;
+    while (current != NULL){
+        if (current->type == NEST || current->type == LIST){
+            sublist_branch->type = NEST;
+            return;
+        }
+        current = current->next;
+    }
+    sublist_branch->type = LIST;
+}
+
+int store_data(node* mega_list, node* storage, char *data) {
+    char *end = malloc(sizeof(char*));
+>>>>>>> 0326015 (Testcases and error handling)
 
 <<<<<<< HEAD
     // Remove newline character from input
@@ -224,13 +266,45 @@ void store_data(node* storage, char *data) {
         printf("Memory allocation failed for string data.\n");
         return ERROR;
     }
+<<<<<<< HEAD
+=======
+    
+    // Check string or reference
+    char *str_ptr = malloc(strlen(data) + 1);
+    int list_id;
+    node* reference;
+>>>>>>> 0326015 (Testcases and error handling)
     strcpy(str_ptr, data);
 <<<<<<< HEAD
 >>>>>>> 49e025d (Implemented Error Handling and Resolved Memory Leaks)
     if (str_ptr != NULL) {
+<<<<<<< HEAD
         strcpy(str_ptr, data);
         storage->data = (void*)str_ptr;
         storage->type = STRING;
+=======
+        if (str_ptr[0] == '{' && str_ptr[strlen(data) - 1] == '}' && sscanf(str_ptr, "{%d}", &list_id) == 1 && valid_id(mega_list, list_id)){
+            //Reference
+<<<<<<< HEAD
+            storage->data = (void*)(find_sublist(mega_list, list_id));
+            return storage->type = NEST;
+=======
+            reference = find_sublist(mega_list, list_id);
+            if (reference->type == LIST){
+                storage->data = (void*)reference;
+                return storage->type = LIST;
+            }else if(reference->type == NEST){
+                return -1;
+            }
+            
+>>>>>>> 0326015 (Testcases and error handling)
+        }else{
+            //String
+            strcpy(str_ptr, data);
+            storage->data = (void*)str_ptr;
+            return storage->type = STRING;
+        }
+>>>>>>> 7560cf6 (Refined Input Handling, Bug Fixes, and Enhanced Error Handling)
     }
 =======
     storage->data = str_ptr;
@@ -520,7 +594,11 @@ element_from_index(node *head, int index, char* command){
 }
 
 void mtll_view_all(node **mega_list, int mega_size){
-    
+    if (*mega_list == NULL) {
+        printf("Mega list is empty.\n");
+        return;
+    }
+
     printf("Number of lists: %d\n", mega_size);
 
     if (*mega_list == NULL) {
@@ -535,12 +613,14 @@ void mtll_view_all(node **mega_list, int mega_size){
     }
 }
 
-void mtll_remove(node **mega_list, int list_id, int mega_size){
+
+int mtll_remove(node **mega_list, int list_id, int mega_size){
     node* current = *mega_list;
     node* target;
 
     // Check if the first node matches the target ID
     if(get_list_id(current) == list_id){
+<<<<<<< HEAD
         *mega_list = (*mega_list)->next; // Update mega_list to skip the first node
         free(current); // Free the memory of the removed node
         return;
@@ -561,7 +641,123 @@ void mtll_remove(node **mega_list, int list_id, int mega_size){
     }
     mtll_view_all(mega_list, mega_size);
     return;
+=======
+        if (has_reference(*mega_list, list_id) == 0){
+            *mega_list = (*mega_list)->next; //Remove linkage to first sublist
+            mtll_free(current->data);
+            free(current);
+        }else{
+            invalid_command("REMOVE");
+            return 0;
+        }
+    }
+    else if (mega_size > 0){
+            //Search for requested id
+        while (current != NULL) {
+            if (get_list_id(current->next) == list_id){
+                target = current->next; //Found the sublist with requested id
+                break;
+            }
+            current = current->next;
+        }if(target != NULL && has_reference(*mega_list, list_id) == 0){ //If the sublist exists
+            current->next = target->next; //Remove linkage to deleted sublist from megalist
+            mtll_free(target->data); 
+            free(target);
+        }else{
+            invalid_command("REMOVE");
+            return 0;
+        }
+        
+    }else{
+        invalid_command("REMOVE");
+        return 0;
+    }
+    printf("List %d has been removed.\n\n", list_id);
+    mtll_view_all(mega_list, mega_size - 1);
+    return 1;
+    
+    
+    
+>>>>>>> 7560cf6 (Refined Input Handling, Bug Fixes, and Enhanced Error Handling)
 }
+<<<<<<< HEAD
+=======
+int mtll_create(node **mega_list, int size, int new_list_id){
+
+    // Head of new list
+    node *head = (node*)malloc(sizeof(node));
+    if (head == NULL) {
+        printf("Memory allocation failed for the head of the new list.\n");
+        return 0;
+    }
+
+    // Initialize the head of the new list
+    char id[3];
+    sprintf(id, "%d", new_list_id);
+    store_data(*mega_list, head, id);
+    head->type = LIST;
+    head->next = NULL;
+
+    // Populate the new list
+    node *current = head;
+    char input[MAX_INPUT_SIZE];
+    dataType type;
+
+    node *new_node = (node*)malloc(sizeof(node));
+    if (new_node == NULL) {
+        free(new_node);
+        mtll_free(head);
+    }
+
+    for (int i = 0; i < size; i++) {
+        fgets(input, sizeof(input), stdin);
+
+        node* new_list_node = (node*)malloc(sizeof(node));
+        if (new_list_node == NULL) {
+            while (head != NULL) {
+                node *temp = head;
+                head = head->next;
+                free(temp);
+            }
+            return 0;
+        }
+
+        type = store_data(*mega_list, new_list_node, input);
+
+        if (type == LIST || type == NEST){
+            head->type = NEST;
+        }else if(type == -1){
+            free(new_node);
+            free(new_list_node);
+            mtll_free(head);
+            invalid_command("NEW");
+            return 0;
+        }
+
+        new_list_node->next = NULL;
+
+        current->next = new_list_node;
+        current = new_list_node;
+    }
+
+    // Initialize the new node
+    new_node->data = head; //New megalist node points to head of new list
+    new_node->next = NULL;
+
+    
+    if (*mega_list == NULL) { //If megalist is empty, initialize first element
+        *mega_list = new_node;
+    } else {
+        node *last = *mega_list; //If megalist is not empty, find the last index and add a new node
+        while (last->next != NULL) {
+            last = last->next;
+        }
+        last->next = new_node;
+    }
+    recap(new_node->data);
+    return 1;
+}
+>>>>>>> 0326015 (Testcases and error handling)
 
 void mtll_delete(node *mega_list, int list_id, int index, int mega_size) {
     // Find the sublist corresponding to the given list_id
@@ -612,6 +808,11 @@ void mtll_delete(node *mega_list, int list_id, int index, int mega_size) {
     } else {
         invalid_command("DELETE(missing index)");
     }
+<<<<<<< HEAD
+=======
+    update_nestness(sublist_branch);
+    recap(sublist_branch);
+>>>>>>> 7560cf6 (Refined Input Handling, Bug Fixes, and Enhanced Error Handling)
 }
 
 <<<<<<< HEAD
@@ -629,10 +830,13 @@ void mtll_insert(node **mega_list, int list_id, int index, int mega_size, char* 
     // Create a new node
     node* new_node = (node*)malloc(sizeof(node));
     if (new_node == NULL) {
-        printf("Memory allocation failed for a new node.\n");
         return;
     }
-    store_data(*mega_list, new_node, data); // Store data into new_node
+    int type = store_data(*mega_list, new_node, data); // Store data into new_node
+    if (type == -1){
+        invalid_command("INSERT");
+        return;
+    }
 
     if (index < 0 || index > size) {
         // If the index is out of bounds, insert at the end of the sublist
@@ -673,6 +877,7 @@ void mtll_insert(node **mega_list, int list_id, int index, int mega_size, char* 
     if(new_node->type == LIST){
             sublist_head->type = NEST;
     }
+    update_nestness(sublist_branch);
     recap(sublist_branch);
 }
 
