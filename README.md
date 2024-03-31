@@ -10,8 +10,11 @@ Multi Type Linked List is a C program that enables users to create, manipulate, 
 ## Milestones
 
 Significant git commits, for marker:
-- 
-
+- commit 2c9a9955dfc38fbee71cce221245e14a8aa5c28c
+- commit e73e656dd0d53d68488a2d4dfb585ddf4886c330
+- commit 27f99f19e0ab161fac4a1cda842ba17013a724a1
+- commit 6d7f4105f1759438ffadddaf24ce50e8f918ad31
+- commit b5e4d692ea231fa865dc9acc68f67fc9c656c9ec
 
 ## Usage
 

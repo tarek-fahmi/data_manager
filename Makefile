@@ -3,18 +3,15 @@ FLAGS=-Wall -Werror
 OBJS=mtll.o main.o
 TARGET=mtll
 
+build: all
+
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) $(FLAGS) $^ -o $@
 
-<<<<<<< HEAD
 %.o: %.c
 	$(CC) -c $(FLAGS) $< -o $@
-=======
-main:
-	gcc -o mtll main.c mtll.c -g -fsanitize=address,leak
->>>>>>> e7594d1 (Error handling and memory leaks)
 
 tests: $(TARGET)
 	make all
