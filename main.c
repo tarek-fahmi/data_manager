@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_COMMAND_LENGTH (128)
+#define MAX_COMMAND_LENGTH (256)
 
 void execute_command(char *command, node **mega_list, int *new_list_id, int *available_lists) {
     int list_id;

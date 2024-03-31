@@ -700,7 +700,7 @@ int mtll_create(node **mega_list, int size, int new_list_id){
 
     // Populate the new list
     node *current = head;
-    char input[MAX_INPUT_SIZE];
+    char input[MAX_INPUT_SIZE + 1];
     dataType type;
 
     node *new_node = (node*)malloc(sizeof(node));
