@@ -1,0 +1,28 @@
+Dynamic Lists and Nestedness (Memory Management)
+NEW 3
+a
+nested
+list
+NEW 2
+another
+one
+NEW 1
+enough
+NEW 3
+{0}
+{1}
+{2}
+VIEW-NESTED 3
+INSERT 0 0 {1}
+INSERT 0 0 {0}
+INSERT 2 0 not a list
+DELETE 3 -1
+DELETE 3 -1
+DELETE 3 -1
+VIEW ALL
+VIEW 0
+REMOVE 0
+REMOVE 1
+REMOVE 2
+REMOVE 3
+VIEW ALL

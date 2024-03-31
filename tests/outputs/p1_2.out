@@ -1,0 +1,11 @@
+List 0:  ->     -> 
+List 1: this -> is -> a -> list -> (not for long)
+Number of lists: 2
+List 0
+List 1
+List 1 has been removed.
+
+Number of lists: 1
+List 0
+List 2: a -> string -> 3.14 -> 420
+char -> string -> float -> int

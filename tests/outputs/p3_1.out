@@ -1,0 +1,6 @@
+List 0: contents -> of -> List -> 0
+Nested 1: I -> want -> to -> view -> {List 0}
+Number of lists: 2
+List 0
+Nested 1
+I -> want -> to -> view -> {contents -> of -> List -> 0}

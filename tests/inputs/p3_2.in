@@ -1,0 +1,20 @@
+Nesting Integration Full
+NEW 4
+contents
+of
+List
+0
+NEW 1
+{0}
+VIEW-NESTED 1
+NEW 3
+oh,
+there's
+more!
+INSERT 1 -1 {2}
+VIEW 1
+TYPE 1
+VIEW-NESTED 1
+REMOVE 0
+REMOVE 2
+REMOVE 1

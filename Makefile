@@ -17,10 +17,13 @@ main:
 >>>>>>> e7594d1 (Error handling and memory leaks)
 
 tests: $(TARGET)
-	echo "Make my tests!"
+	make all
+	chmod u+x tests.sh
 
 run_tests: tests
-	echo "Run my tests!"
+	
+	./tests.sh
+	make clean
 
 .PHONY:
 clean:

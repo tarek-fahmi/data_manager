@@ -1,0 +1,20 @@
+Alternative Inputs & Commands (Normal)
+NEW 3
+a
+b
+c
+INSERT 0 -1 e
+INSERT 0 -2 d
+INSERT 0 0 a
+DELETE 0 0
+DELETE 0 -1
+DELETE 0 -2
+DELETE 0 -1
+DELETE 0 -1
+VIEW 0
+REMOVE 0
+NEW 1
+alt Inputs
+INSERT 1 -1    
+INSERT 1 -1 <- gap
+INSERT 1 0 Ŧħëšë åřë

@@ -1,0 +1,17 @@
+Invalid Commands (Corner)
+NEW 4
+this
+is
+a
+list
+DELETE -1 0
+DELETE
+INSERT
+INSERT       
+INSERT 0 1.0
+INSERT 0.0 1
+INSERT this here
+DELETE     
+DELETE 0.0 1.0
+VIEW 0
+VIEW ALL

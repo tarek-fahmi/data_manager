@@ -1,0 +1,36 @@
+List 0: a -> nested -> list
+List 1: another -> one
+List 2: enough
+Nested 3: {List 0} -> {List 1} -> {List 2}
+{a -> nested -> list} -> {another -> one} -> {enough}
+INVALID COMMAND: INSERT
+INVALID COMMAND: INSERT
+List 2: not a list -> enough
+Nested 3: {List 0} -> {List 1}
+Nested 3: {List 0}
+List 3: 
+Number of lists: 4
+List 0
+List 1
+List 2
+List 3
+a -> nested -> list
+List 0 has been removed.
+
+Number of lists: 3
+List 1
+List 2
+List 3
+List 1 has been removed.
+
+Number of lists: 2
+List 2
+List 3
+List 2 has been removed.
+
+Number of lists: 1
+List 3
+List 3 has been removed.
+
+Number of lists: 0
+Number of lists: 0

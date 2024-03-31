@@ -1,0 +1,15 @@
+List 0: contents -> of -> List -> 0
+Nested 1: {List 0}
+{contents -> of -> List -> 0}
+List 2: oh, -> there's -> more!
+Nested 1: {List 0} -> {List 2}
+{List 0} -> {List 2}
+reference -> reference
+{contents -> of -> List -> 0} -> {oh, -> there's -> more!}
+INVALID COMMAND: REMOVE
+INVALID COMMAND: REMOVE
+List 1 has been removed.
+
+Number of lists: 2
+List 0
+List 2

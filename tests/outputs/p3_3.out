@@ -1,0 +1,9 @@
+List 0: a -> nested -> list
+List 1: another -> one
+List 2: enough new
+Nested 3: {List 0} -> {List 1} -> {List 2}
+INVALID COMMAND: REMOVE
+INVALID COMMAND: REMOVE
+INVALID COMMAND: REMOVE
+INVALID COMMAND: INSERT
+INVALID COMMAND: INSERT

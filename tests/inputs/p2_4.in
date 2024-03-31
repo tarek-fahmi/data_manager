@@ -1,0 +1,30 @@
+Unusual Inputs (Edge)
+NEW 1
+lonely element
+DELETE 0 0
+VIEW ALL
+NEW 12
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+DELETE 1 0
+DELETE 1 11
+DELETE 1 11
+DELETE 1 -1
+DELETE 1 -20
+INSERT 1 0 intruder
+INSERT 1 -1 trojan horse
+INSERT 1 -5      
+INSERT 1 -15
+VIEW 0
+VIEW 1
+REMOVE 0

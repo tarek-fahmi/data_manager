@@ -1,0 +1,19 @@
+Invalid Commands
+NEW 3
+a
+nested
+list
+NEW 2
+another
+one
+NEW 1
+enough new
+NEW 3
+{0}
+{1}
+{2}
+REMOVE 0
+REMOVE 1
+REMOVE 2
+INSERT 0 0 {1}
+INSERT 

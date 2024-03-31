@@ -1,0 +1,9 @@
+Invalid Commands (Corner)
+NEW -1
+NEW
+NEW 1.00
+REMOVE -1
+REMOVE abracadbra
+VIEW 0
+VIEW -1
+TYPE -1
