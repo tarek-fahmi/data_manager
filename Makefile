@@ -18,7 +18,6 @@ tests: $(TARGET)
 	chmod u+x tests.sh
 
 run_tests: tests
-	
 	./tests.sh
 	make clean
 
