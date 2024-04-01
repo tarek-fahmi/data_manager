@@ -15,6 +15,7 @@ run_test() {
     diff "$output_file" "tests/outputs/p${part}_${test_num}.out" >/dev/null
     if [ $? -eq 0 ]; then
         printf "\tPassed!  :D\n"
+        ((passed_tests++))
     else
         printf "\tFailed!  :(\n"
     fi
@@ -23,13 +24,21 @@ run_test() {
 calculate_coverage() {
     local num_parts="$1"
     local num_tests="$2"
+    local total_tests=$((num_parts * num_tests))
+    local passed_tests=0
+
     for ((part=1; part<=num_parts; part++)); do
         printf "\nTesting Part $part:\n\n"
-        for ((i=1; i<=num_tests; i++)); do
-            run_test "$part" "$i"
+        for ((test=1; test<=num_tests; test++)); do
+            run_test "$part" "$test"
         done
     done
+
+    local passed_percentage=$((passed_tests * 100 / total_tests))
+    printf "\n\nSummary:\n\n"
+    printf "Passed Tests: %d\n" "$passed_tests"
+    printf "Total Tests: %d\n" "$total_tests"
+    printf "Testcase Completion: %d%%\n" "$passed_percentage"
 }
 
-global total_passes = 0;
 calculate_coverage 3 4

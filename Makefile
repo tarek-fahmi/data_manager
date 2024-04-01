@@ -1,6 +1,6 @@
 CC=gcc
 FLAGS=-Wall -Werror
-OBJS=mtll.o main.o
+OBJS=mtll.o main.o helpers.o
 TARGET=mtll
 
 build: all

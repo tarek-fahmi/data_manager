@@ -1,6 +1,5 @@
-
-
 #include "mtll.h"
+#include "helpers.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -9,147 +8,45 @@
 
 #define MAX_INPUT_SIZE (128)
 
-// Retrieves the ID of a sublist from a mega node.
-// Parameters: mega_node - pointer to the mega node containing the sublist
-// Returns: ID of the sublist, or -1 if mega_node is NULL or sublist is empty
-int get_list_id(node *mega_node)
+// Frees the memory allocated for a list.
+// Parameters: head - pointer to the node to be freed
+// Free memory allocated for a list.
+void mtll_free(node *head)
 {
-    if (mega_node == NULL)
-    {
-        return -1; // Failed to allocate
-    }
-    node *sublist = mega_node->data;
+    node *current = head->next;
 
-    if (sublist != NULL)
-    {
-        // Return list id
-        return *((int *)(sublist->data));
-    }
-    else
-    {
-        return -1; // Return -1 if the sublist is empty
-    }
-}
-
-// Checks if a given mega list contains a reference to a sublist with a specific ID.
-// Parameters: mega_list - pointer to the mega list, list_id - ID of the sublist to search for
-// Returns: 1 if a reference is found, 0 otherwise
-// Checks if a given mega list contains a reference to a sublist with a specific ID.
-// Parameters:
-// - mega_list: pointer to the mega list
-// - list_id: ID of the sublist to search for
-// Returns:
-// - 1 if a reference is found, 0 otherwise
-int has_reference(node *mega_list, int list_id)
-{
-    node *i = mega_list;
-    node *reference_head;
-
-    // Iterate through Mega_list
-    while (i != NULL)
-    {
-        // Sublist traversal pointer
-        node *j = (node *)((node *)i->data)->next;
-
-        // Iterate through sublist
-        while (j != NULL)
-        {
-            // Check if the element is a reference to a sublist
-            if (j->type == LIST || j->type == NEST)
-            {
-                reference_head = j->data;
-                // Check if the ID matches the specified list_id
-                if (*((int *)(reference_head->data)) == list_id)
-                {
-                    return 1; // Has reference
-                }
-            }
-            j = j->next; 
-        }
-        i = i->next; 
-    }
-
-    return 0; // No reference
-}
-
-// Retrieves the size of a sublist.
-// Parameters: head - pointer to the head of the sublist
-// Returns: size of the sublist
-int get_list_size(node *head)
-{
-    node *current = head;
-    int size = 0;
-
-    // Iterate through sublist
+    // Free data of head node.
+    free(head->data);
+    free(head);
+    
+    // Free data and nodes of subsequent nodes.
+    node *temp;
     while (current != NULL)
     {
-        size++;
-        current = current->next; 
-    }
-
-    return size; 
-}
-
-
-// Checks if a mega list contains a sublist with a specific ID.
-// Parameters: mega_list - pointer to the mega list, list_id - ID of the sublist to search for
-// Returns: 1 if sublist with the given ID exists, 0 otherwise
-int valid_id(node *mega_list, int list_id)
-{
-    if (list_id < 0) // Negative ID, return false
-        return 0;
-
-    node *current = mega_list; // Iterate through mega list
-    while (current != NULL)
-    {
-        if (get_list_id(current) == list_id) // Match found, return true
-            return 1;
+        temp = current;
         current = current->next;
+        free_node(temp);
     }
-    return 0; // No match found, return false
 }
 
-// Prints an error message for an invalid command.
-// Parameters: command - string representing the invalid command
-void invalid_command(char *command)
-{
-    printf("INVALID COMMAND: %s\n", command);
-    return;
-}
 
-// Finds and returns a pointer to a sublist with a specific ID.
-// Parameters: mega_list - pointer to the mega list, list_id - ID of the sublist to search for
-// Returns: pointer to the sublist with the given ID, or NULL if not found
-node *find_sublist(node *mega_list, int list_id)
+//Frees all dynamically allocated memory in the mega list.
+// Parameters: mega_list - pointer to the mega list
+void mtll_free_all(node *mega_list)
 {
-    node *current = mega_list;
-    while (current != NULL)
+    node *current_mega = mega_list;
+
+    // Iterate through the mega list and free each sublist
+    node *temp;
+    while (current_mega != NULL)
     {
-        if (get_list_id(current) == list_id)
-        {
-            current = ((node *)current->data);
-            break;
-        }
-        current = current->next;
-    }
-    return current;
-}
+        temp = current_mega;
+        current_mega = current_mega->next;
 
-// Updates the type of a sublist to indicate its nestness.
-// Parameters: sublist_branch - pointer to the branch node of the sublist
-void update_nestness(node *sublist_branch)
-{
-    node *current = sublist_branch->next;
-    while (current != NULL)
-    {
-        if (current->type == NEST || current->type == LIST)
-        {
-            sublist_branch->type = NEST;
-            return;
-        }
-        current = current->next;
+        // Free the sublist and its nodes
+        mtll_free(temp->data);
+        free(temp);
     }
-    sublist_branch->type = LIST;
 }
 
 // Stores data into a node based on its type and returns the type.
@@ -158,76 +55,73 @@ void update_nestness(node *sublist_branch)
 // Returns: type of data stored in the node, or -1 if data could not be stored
 int store_data(node *mega_list, node *storage, char *data)
 {
-    char *end = NULL; // Allocating space for a single char
-    data[strcspn(data, "\n")] = '\0';
+    char *end = NULL;
+    data[strcspn(data, "\n")] = '\0'; 
 
+    // Handle empty data case.
     if (strncmp(data, "\0", 1) == 0)
     {
-        char *empty_ptr = malloc(1);
+        // Allocate empty string.
+        char *empty_ptr = malloc(1); 
         if (empty_ptr != NULL)
         {
             *empty_ptr = '\0';
-            storage->data = (void *)empty_ptr;
-            // Freeing allocated memory
+            storage->data = (void *)empty_ptr; 
             return storage->type = STRING;
         }
-        // Freeing allocated memory
-        return -1; // Return an error code in case of allocation failure
+        return -1; // Allocation failure
     }
 
-    int int_data = strtol(data, &end, 10);
+    // Convert to integer if possible.
+    int int_data = strtol(data, &end, 10); 
     if (*end == '\0')
     {
-        int *int_ptr = malloc(sizeof(int));
+        // Allocate integer.
+        int *int_ptr = malloc(sizeof(int)); 
         if (int_ptr != NULL)
         {
             *int_ptr = int_data;
-            storage->data = (void *)int_ptr;
-            // Freeing allocated memory
+            storage->data = (void *)int_ptr; 
             return storage->type = INTEGER;
         }
-        // Freeing allocated memory
-        return -1;
+        return -1; // Allocation failure
     }
 
-    float float_data = strtof(data, &end);
+    // Convert to float if possible.
+    float float_data = strtof(data, &end); 
     if (*end == '\0')
     {
-        float *float_ptr = malloc(sizeof(float));
+        // Allocate float.
+        float *float_ptr = malloc(sizeof(float)); 
         if (float_ptr != NULL)
         {
             *float_ptr = float_data;
-            storage->data = (void *)float_ptr;
-            // Freeing allocated memory
+            storage->data = (void *)float_ptr; 
             return storage->type = FLOAT;
         }
-        // Freeing allocated memory
-        return -1;
+        return -1; // Allocation failure
     }
 
+    // Handle character data.
     if (strlen(data) == 1 && (strncmp(data, "\t", 1) != 0 && isprint(data[0])))
     {
-        char *char_ptr = malloc(1);
+        // Allocate character.
+        char *char_ptr = malloc(1); 
         if (char_ptr != NULL)
         {
             *char_ptr = *data;
-            storage->data = (void *)char_ptr;
+            storage->data = (void *)char_ptr; 
             if (*data < 127 && *data >= 0)
             {
-                // Freeing allocated memory
-                return storage->type = CHAR;
+                return storage->type = CHAR; 
             }
-            // Freeing allocated memory
             return storage->type = STRING;
         }
-        else
-        {
-            // Freeing allocated memory
-            return -1;
-        }
+        return -1; // Allocation failure
     }
 
-    char *str_ptr = malloc(strlen(data) + 1);
+    // Handle list reference.
+    char *str_ptr = malloc(strlen(data) + 1); 
     int list_id;
     node *reference;
     strcpy(str_ptr, data);
@@ -238,197 +132,27 @@ int store_data(node *mega_list, node *storage, char *data)
             free(str_ptr);
             if (valid_id(mega_list, list_id))
             {
-
                 reference = find_sublist(mega_list, list_id);
                 if (reference->type == LIST)
                 {
-                    storage->data = (void *)reference;
-                    // Freeing allocated memory
+                    storage->data = (void *)reference; 
                     return storage->type = LIST;
                 }
             }
-            // Freeing allocated memory
-            return -1;
+            return -1; // Invalid or allocation failure
         }
         else if (strpbrk(data, "{}") != NULL)
         {
-            free(str_ptr); // Freeing allocated memory
-                           // Freeing allocated memory
-            return -1;
+            free(str_ptr); 
+            return -1; // Invalid data format
         }
         else
         {
-            storage->data = (void *)str_ptr;
-            // Freeing allocated memory
+            storage->data = (void *)str_ptr; 
             return storage->type = STRING;
         }
     }
-    // Freeing allocated memory
-    return STRING;
-}
-
-// Frees the memory allocated for a node.
-// Parameters: Node - pointer to the node to be freed
-void free_node(node *Node)
-{ // Free dynamically allocated memory of node and attributes.
-    if (Node->data != NULL && Node->type != LIST)
-    {
-        free(Node->data);
-    }
-
-    free(Node);
-    return;
-}
-
-// Frees the memory allocated for a list.
-// Parameters: head - pointer to the node to be freed
-void mtll_free(node *head)
-{ 
-
-    node *current = head->next;
-    free(head->data);
-    free(head);
-    node *temp;
-    while (current != NULL)
-    {
-        temp = current;
-        current = current->next;
-        free_node(temp);
-    }
-}
-
-//Frees all dynamically allocated memory in the mega list.
-// Parameters: mega_list - pointer to the mega list
-void mtll_free_all(node *mega_list)
-{
-    node *current_mega = mega_list;
-    node *temp;
-    while (current_mega != NULL)
-    {
-        temp = current_mega;
-        current_mega = current_mega->next;
-        mtll_free(temp->data);
-        free(temp);
-    }
-}
-
-
-// Prints the contents of a node.
-// Parameters: element - pointer to the node
-void print_node(node *element)
-{
-    node *sublist;
-
-    switch (element->type)
-    {
-
-    case LIST:
-        sublist = (node *)element->data;
-        printf("{List %d}", *(int *)(sublist->data));
-        break;
-
-    case NEST:
-        sublist = (node *)element->data;
-        printf("{List %d}", *(int *)(sublist->data));
-        break;
-
-    case INTEGER:
-        printf("%d", *(int *)element->data);
-        break;
-
-    case FLOAT:
-        printf("%.2f", *(float *)element->data);
-        break;
-
-    case CHAR:
-        printf("%c", *(char *)element->data);
-        break;
-
-    case STRING:
-        printf("%s", (char *)element->data);
-        break;
-
-    default:
-        printf("ERROR: TYPE UNKOWN");
-        break;
-    }
-}
-
-// Prints the type of a node.
-// Parameters: node - pointer to the node
-void print_node_type(node *node)
-{
-
-    switch (node->type)
-    {
-
-    case NEST:
-        printf("reference");
-        break;
-
-    case LIST:
-        printf("reference");
-        break;
-
-    case INTEGER:
-        printf("int");
-        break;
-
-    case FLOAT:
-        printf("float");
-        break;
-
-    case CHAR:
-        printf("char");
-        break;
-
-    case STRING:
-        printf("string");
-        break;
-
-    default:
-        printf("ERROR: TYPE UNKOWN");
-        break;
-    }
-    return;
-}
-
-// Prints the contents or types of nodes in a list based on the specified mode.
-// Parameters: head - pointer to the head of the list, mode - mode indicating whether to print data or types
-void mtll_print_list(node *head, printMode mode)
-{
-    node *current = head;
-
-    // For each node, print either types, contents, or contents inc sublist depending on mode.
-    while (current != NULL)
-    {
-        if (mode == DATA)
-        {
-            print_node(current);
-        }
-        else if (mode == TYPE)
-        {
-            print_node_type(current);
-        }
-        else if (mode == NESTED)
-        {
-            if (current->type != LIST && current->type != NEST)
-            {
-                print_node(current);
-            }
-            else
-            { // Print contents of nested node.
-                printf("{");
-                mtll_print_list((node *)(((node *)current->data)->next), DATA);
-                printf("}");
-            }
-        }
-        if (current->next != NULL)
-        {
-            printf(" -> ");
-        }
-        current = current->next;
-    }
+    return STRING; 
 }
 
 // Views the contents of a sublist in a mega list.
@@ -446,30 +170,9 @@ void mtll_view(node *mega_list, int list_id, printMode mode, int mega_size)
         mtll_print_list(sublist_head, mode); // Access the sublist to print its contents
         printf("\n");
     }
-    else
-    {
-        printf("Sublist with ID %d not found.\n", list_id);
-    }
 }
 
-// Prints the list number and contents.
-// Parameters: sublist_branmch - pointer to the sublist to print
-void recap(node *sublist_branch)
-{
-    // Recap of list contents after manipulations.
-    node *sublist_head = sublist_branch->next;
-    if (sublist_branch->type == NEST)
-    {
-        printf("Nested %d: ", *(int *)(sublist_branch->data));
-    }
-    else
-    {
-        printf("List %d: ", *(int *)(sublist_branch->data));
-    }
-    mtll_print_list(sublist_head, DATA);
-    printf("\n");
-    return;
-}
+
 
 // Prints a summary of all existing lists in the mega list.
 // Parameters: mega_list - pointer to the pointer to the mega list, mega_size - size of the mega list
@@ -505,50 +208,47 @@ void mtll_view_all(node **mega_list, int mega_size)
 // Parameters: mega_list - pointer to the pointer to the mega list, list_id - ID of the sublist to remove,
 //             mega_size - size of the mega list
 // Returns: 1 if the sublist is successfully removed, 0 otherwise
+// Remove a sublist from the mega list.
 int mtll_remove(node **mega_list, int list_id, int mega_size)
 {
     node *current = *mega_list;
     node *target = current;
 
+    // Remove sublist by ID
     if (get_list_id(current) == list_id)
     {
         if (has_reference(*mega_list, list_id) == 0)
-        {
             *mega_list = (*mega_list)->next; // Remove linkage to first sublist
-        }
-        else
-        {
+        else {
             invalid_command("REMOVE");
             return 0;
         }
     }
     else if (mega_size > 0)
     {
-        // Search for requested id
+        // Find sublist with requested ID
         while (current != NULL)
         {
             if (get_list_id(current->next) == list_id)
             {
-                target = current->next; // Found the sublist with requested id
+                target = current->next; // Found sublist with requested ID
                 break;
             }
             current = current->next;
         }
         if (target != NULL && has_reference(*mega_list, list_id) == 0)
-        {                                 // If the sublist exists
             current->next = target->next; // Remove linkage to deleted sublist from megalist
-        }
-        else
-        {
+        else {
             invalid_command("REMOVE");
             return 0;
         }
     }
-    else
-    {
+    else {
         invalid_command("REMOVE");
         return 0;
     }
+
+    // Free memory allocated for the sublist
     mtll_free(target->data);
     free(target);
     printf("List %d has been removed.\n\n", list_id);
@@ -562,17 +262,15 @@ int mtll_remove(node **mega_list, int list_id, int mega_size)
 // Returns: 1 if the new sublist is successfully created and added, 0 otherwise
 int mtll_create(node **mega_list, int size, int new_list_id)
 {
-
-    // Head of new list
+    // Create head of new list
     node *head = (node *)malloc(sizeof(node));
-    if (head == NULL)
-    {
+    if (head == NULL) {
         printf("Memory allocation failed for the head of the new list.\n");
         free(head);
         return 0;
     }
 
-    // Initialize the head of the new list
+    // Initialize head of the new list
     char *id = malloc(3);
     sprintf(id, "%d", new_list_id);
     store_data(*mega_list, head, id);
@@ -586,18 +284,15 @@ int mtll_create(node **mega_list, int size, int new_list_id)
     dataType type;
 
     node *new_node = (node *)malloc(sizeof(node));
-    if (new_node == NULL)
-    {
+    if (new_node == NULL) {
         free_node(new_node);
         free_node(head);
         invalid_command("NEW");
         return 0;
     }
 
-    for (int i = 0; i < size; i++)
-    {
-        if (fgets(input, sizeof(input), stdin) == NULL)
-        {
+    for (int i = 0; i < size; i++) {
+        if (fgets(input, sizeof(input), stdin) == NULL) {
             mtll_free(head);
             free(new_node);
             return 0;
@@ -605,14 +300,13 @@ int mtll_create(node **mega_list, int size, int new_list_id)
 
         node *new_list_node = (node *)malloc(sizeof(node));
 
+        // Store data into new_list_node
         type = store_data(*mega_list, new_list_node, input);
 
-        if (type == LIST)
-        {
+        // Update type of head if nested list
+        if (type == LIST) {
             head->type = NEST;
-        }
-        else if (type == -1)
-        {
+        } else if (type == -1) {
             free(new_list_node);
             mtll_free(head);
             free(new_node);
@@ -630,15 +324,12 @@ int mtll_create(node **mega_list, int size, int new_list_id)
     new_node->data = head; // New megalist node points to head of new list
     new_node->next = NULL;
 
+    // Add new node to mega list
     if (*mega_list == NULL)
-    { // If megalist is empty, initialize first element
         *mega_list = new_node;
-    }
-    else
-    {
-        node *last = *mega_list; // If megalist is not empty, find the last index and add a new node
-        while (last->next != NULL)
-        {
+    else {
+        node *last = *mega_list;
+        while (last->next != NULL) {
             last = last->next;
         }
         last->next = new_node;
@@ -651,6 +342,7 @@ int mtll_create(node **mega_list, int size, int new_list_id)
 // Parameters: mega_list - pointer to the mega list, list_id - ID of the sublist to delete from,
 //             index - index of the node to delete, mega_size - size of the mega list
 // Returns: void
+
 void mtll_delete(node *mega_list, int list_id, int index, int mega_size)
 {
     // Find the sublist corresponding to the given list_id
@@ -716,7 +408,6 @@ void mtll_delete(node *mega_list, int list_id, int index, int mega_size)
 // Inserts a node into a sublist in a mega list.
 // Parameters: mega_list - pointer to the pointer to the mega list, list_id - ID of the sublist to insert into,
 //             index - index at which to insert the node, mega_size - size of the mega list, data - data to insert
-// Returns: void
 void mtll_insert(node **mega_list, int list_id, int index, int mega_size, char *data)
 {
     // Find the sublist corresponding to the given list_id
@@ -725,6 +416,7 @@ void mtll_insert(node **mega_list, int list_id, int index, int mega_size, char *
 
     int size = get_list_size(sublist_head);
 
+    // Check if index is out of bounds
     if (index < 0 || index > size)
     {
         if (index > size)

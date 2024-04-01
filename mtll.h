@@ -1,5 +1,4 @@
 #ifndef MTLL_H
-
 #define MTLL_H
 
 #include <stdlib.h>
@@ -42,9 +41,7 @@ typedef struct node
 
 
 
-// A few suggested function prototypes:
-
-// Feel free to change or improve these as you need.
+// Function prototypes:
 extern void invalid_command(char* command);
 
 extern int valid_id(node* mega_list, int list_id);
@@ -61,13 +58,10 @@ extern void mtll_view(node* mega_list, int index, printMode mode, int mega_size)
 
 extern void mtll_view_all(node **mega_list, int mega_size);
 
-extern int mtll_remove(node **mega_list, int list_id, int mega_size); //MAKE THIS FREE THE LIST RATHER THAN ONLY THE REFERENCE
+extern int mtll_remove(node **mega_list, int list_id, int mega_size);
 
 extern void mtll_insert(node **mega_list, int list_id, int index, int mega_size, char* data); 
 
 extern void mtll_delete(node *mega_list, int list_id, int index, int mega_size);
-
-extern node* mtll_list_reference(node * mega_list, int list_id); 
-
 
 #endif
